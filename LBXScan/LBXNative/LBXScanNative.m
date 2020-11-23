@@ -673,16 +673,26 @@
 }
 
 #pragma mark --识别条码图片
-+ (void)recognizeImage:(UIImage*)image success:(void(^)(NSArray<LBXScanResult*> *array))block;
++ (void)recognizeImage:(UIImage *)image success:(void (^)(NSArray<LBXScanResult *> *array))block
 {
     if (!image) {
         block(nil);
         return;
     }
     
+    CGImageRef imageRef = image.CGImage;
+    if (!imageRef) {
+        block(nil);
+        return;
+    }
+    
     if (@available(iOS 8.0, *)) {
         
-        CIImage * cimg = [CIImage imageWithCGImage:image.CGImage];
+        /// - (nullable CGImageRef)CGImage NS_RETURNS_INNER_POINTER CF_RETURNS_NOT_RETAINED;
+        /// manual retain pointer
+        CGImageRetain(imageRef);
+        CIImage *cimg = [CIImage imageWithCGImage:imageRef];
+        CGImageRelease(imageRef);
         
         if (!cimg) {
             block(nil);
@@ -691,7 +701,7 @@
         
         NSArray *features = nil;
         @try {
-            CIDetector*detector = [CIDetector detectorOfType:CIDetectorTypeQRCode context:nil options:@{ CIDetectorAccuracy : CIDetectorAccuracyHigh }];
+            CIDetector *detector = [CIDetector detectorOfType:CIDetectorTypeQRCode context:nil options:@{CIDetectorAccuracy: CIDetectorAccuracyHigh}];
             features = [detector featuresInImage:cimg];
         } @catch (NSException *exception) {
             block(nil);
@@ -700,12 +710,11 @@
             
         }
         
-        NSMutableArray<LBXScanResult*> *mutableArray = [[NSMutableArray alloc]initWithCapacity:1];
-        for (int index = 0; index < [features count]; index ++)
-        {
+        NSMutableArray<LBXScanResult *> *mutableArray = [[NSMutableArray alloc] initWithCapacity:1];
+        for (int index = 0; index < [features count]; index++) {
             CIQRCodeFeature *feature = [features objectAtIndex:index];
             NSString *scannedResult = feature.messageString;
-            LBXScanResult *item = [[LBXScanResult alloc]init];
+            LBXScanResult *item = [[LBXScanResult alloc] init];
             item.strScanned = scannedResult;
             item.strBarCodeType = CIDetectorTypeQRCode;
             item.imgScanned = image;
@@ -714,9 +723,9 @@
         if (block) {
             block(mutableArray);
         }
-    }else{
+    } else {
         if (block) {
-            LBXScanResult *result = [[LBXScanResult alloc]init];
+            LBXScanResult *result = [[LBXScanResult alloc] init];
             result.strScanned = @"只支持ios8.0之后系统";
             block(@[result]);
         }
