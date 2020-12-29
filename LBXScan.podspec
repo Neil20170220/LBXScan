@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = 'LBXScan'
-    s.version      = '2.5.1'
+    s.version      = '2.5.1.2'
     s.summary      = 'ios scan wrapper'
     s.homepage     = 'https://github.com/MxABC/LBXScan'
     s.license      = 'MIT'
@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
     s.prefix_header_contents = '#import <Foundation/Foundation.h>'
 
 
-    s.default_subspec = 'All'
+    s.default_subspec = 'Types'
 
     s.subspec 'Types' do |type|
     type.source_files = 'LBXScan/*.{h,m}'
@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
       lbxZXing.prefix_header_contents = '#import "ZXingWrapper.h"'
       lbxZXing.dependency 'LBXScan/Types','~> 2.2'
     end
-  
+
     s.subspec 'UI' do |ui|
       ui.source_files = 'LBXScan/UI/*.{h,m}'
       ui.resource     = 'LBXScan/UI/CodeScan.bundle'
