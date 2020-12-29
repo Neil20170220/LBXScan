@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = 'LBXScan'
-    s.version      = '2.5.1.2'
+    s.version      = '2.5.1.3'
     s.summary      = 'ios scan wrapper'
     s.homepage     = 'https://github.com/MxABC/LBXScan'
     s.license      = 'MIT'
@@ -45,6 +45,18 @@ Pod::Spec.new do |s|
       ui.resource     = 'LBXScan/UI/CodeScan.bundle'
       ui.prefix_header_contents = '#import "LBXScanView.h"'
       ui.dependency 'LBXScan/Types','~> 2.2'
+    end
+
+    s.subspec 'iOSApp' do |iOSApp|
+      iOSApp.source_files = 'LBXScan/*.{h,m}','LBXScan/LBXNative/*.{h,m}','LBXScan/LBXZXing/**/*.{h,m}','LBXScan/UI/*.{h,m}'
+      iOSApp.resource     = 'LBXScan/UI/CodeScan.bundle'
+      iOSApp.ios.frameworks = 'AVFoundation', 'CoreGraphics', 'CoreMedia', 'CoreVideo', 'ImageIO', 'QuartzCore'
+      iOSApp.prefix_header_contents = '#import "LBXScanNative.h"','#import "ZXingWrapper.h"','#import "LBXScanView.h"'
+    end
+
+     s.subspec 'iOSCatalyst' do |iOSCatalyst|
+      iOSCatalyst.source_files = 'LBXScan/*.{h,m}','LBXScan/LBXNative/*.{h,m}'
+      iOSCatalyst.prefix_header_contents = '#import "LBXScanNative.h"'
     end
 
 end
