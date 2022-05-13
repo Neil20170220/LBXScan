@@ -14,6 +14,6 @@ Pod::Spec.new do |s|
     s.source_files = 'LBXScan/*.{h,m}','LBXScan/LBXNative/*.{h,m}','LBXScan/UI/*.{h,m}'
     s.resource     = 'LBXScan/UI/CodeScan.bundle'
     s.ios.frameworks = 'AVFoundation', 'CoreGraphics', 'CoreMedia', 'CoreVideo', 'ImageIO', 'QuartzCore'
-    s.prefix_header_contents = '#import "LBXScanNative.h"','#import "ZXingWrapper.h"','#import "LBXScanView.h"'
+    s.prefix_header_contents = '#import "LBXScanNative.h"','#import "LBXScanView.h"'
 
 end
