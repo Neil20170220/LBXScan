@@ -7,7 +7,6 @@
 //
 
 #import "LBXScanViewController.h"
-#import <AssetsLibrary/AssetsLibrary.h>
 #import <Photos/Photos.h>
 
 @interface LBXScanViewController ()
@@ -27,7 +26,6 @@
     
     self.view.backgroundColor = [UIColor blackColor];
     
-
     switch (_libraryType) {
         case SLT_Native:
             self.title = @"native";
@@ -50,21 +48,21 @@
     [self drawScanView];
     
     [self requestCameraPemissionWithResult:^(BOOL granted) {
-
+        
         if (granted) {
-
+            
             //不延时，可能会导致界面黑屏并卡住一会
             [self performSelector:@selector(startScan) withObject:nil afterDelay:0.3];
-
+            
         }else{
-
+            
 #ifdef LBXScan_Define_UI
             [self.qRScanView stopDeviceReadying];
 #endif
-
+            
         }
     }];
-   
+    
 }
 
 //绘制扫描区域
@@ -84,7 +82,7 @@
     
     if (!_cameraInvokeMsg) {
         
-//        _cameraInvokeMsg = NSLocalizedString(@"wating...", nil);
+        //        _cameraInvokeMsg = NSLocalizedString(@"wating...", nil);
     }
     
     [_qRScanView startDeviceReadyingWithText:_cameraInvokeMsg];
@@ -132,7 +130,7 @@
     switch (_libraryType) {
         case SLT_Native:
         {
-
+            
             
 #ifdef LBXScan_Define_Native
             
@@ -145,7 +143,7 @@
                     //设置只识别框内区域
                     cropRect = [LBXScanView getScanRectWithPreView:self.view style:_style];
                 }
-
+                
                 NSString *strCode = AVMetadataObjectTypeQRCode;
                 if (_scanCodeType != SCT_BarCodeITF ) {
                     
@@ -161,12 +159,12 @@
             }
             [_scanObj startScan];
 #endif
-
+            
         }
             break;
         case SLT_ZXing:
         {
-
+            
 #ifdef LBXScan_Define_ZXing
             if (!_zxingObj) {
                 
@@ -186,9 +184,9 @@
                     
                     //设置只识别框内区域
                     CGRect cropRect = [LBXScanView getZXingScanRectWithPreView:videoView style:_style];
-                                        
-                     [_zxingObj setScanRect:cropRect];
-                }               
+                    
+                    [_zxingObj setScanRect:cropRect];
+                }
             }
             [_zxingObj start];
 #endif
@@ -234,25 +232,25 @@
     //test only ZBAR_I25 effective,why
     return ZBAR_I25;
     
-//    switch (type) {
-//        case SCT_QRCode:
-//            return ZBAR_QRCODE;
-//            break;
-//        case SCT_BarCode93:
-//            return ZBAR_CODE93;
-//            break;
-//        case SCT_BarCode128:
-//            return ZBAR_CODE128;
-//            break;
-//        case SCT_BarEAN13:
-//            return ZBAR_EAN13;
-//            break;
-//            
-//        default:
-//            break;
-//    }
-//    
-//    return (zbar_symbol_type_t)type;
+    //    switch (type) {
+    //        case SCT_QRCode:
+    //            return ZBAR_QRCODE;
+    //            break;
+    //        case SCT_BarCode93:
+    //            return ZBAR_CODE93;
+    //            break;
+    //        case SCT_BarCode128:
+    //            return ZBAR_CODE128;
+    //            break;
+    //        case SCT_BarEAN13:
+    //            return ZBAR_EAN13;
+    //            break;
+    //
+    //        default:
+    //            break;
+    //    }
+    //
+    //    return (zbar_symbol_type_t)type;
 }
 #endif
 
@@ -261,7 +259,7 @@
     [super viewWillDisappear:animated];
     
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
- 
+    
     [self stopScan];
     
 #ifdef LBXScan_Define_UI
@@ -296,7 +294,7 @@
         default:
             break;
     }
-
+    
 }
 
 #pragma mark -扫码结果处理
@@ -358,7 +356,7 @@
     picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     
     picker.delegate = self;
-   
+    
     //部分机型有问题
     picker.allowsEditing = allowsEditing;
     
@@ -372,7 +370,7 @@
 
 -(void)imagePickerController:(UIImagePickerController*)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    [picker dismissViewControllerAnimated:YES completion:nil];    
+    [picker dismissViewControllerAnimated:YES completion:nil];
     
     __block UIImage* image = [info objectForKey:UIImagePickerControllerEditedImage];
     
@@ -381,7 +379,7 @@
     }
     
     __weak __typeof(self) weakSelf = self;
-        
+    
     switch (_libraryType) {
         case SLT_Native:
         {
@@ -522,7 +520,7 @@
         case SCT_BarEAN13:
             return AVMetadataObjectTypeEAN13Code;
             break;
-
+            
         default:
             return AVMetadataObjectTypeQRCode;
             break;
@@ -553,48 +551,20 @@
             {
                 [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
                                          completionHandler:^(BOOL granted) {
-                                             
-                                             dispatch_async(dispatch_get_main_queue(), ^{
-                                                 if (granted) {
-                                                     completion(true);
-                                                 } else {
-                                                     completion(false);
-                                                 }
-                                             });
-                                             
-                                         }];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (granted) {
+                            completion(true);
+                        } else {
+                            completion(false);
+                        }
+                    });
+                    
+                }];
             }
                 break;
                 
         }
     }
-    
-    
 }
-
-+ (BOOL)photoPermission
-{
-    if (@available(iOS 8.0, *)) {
-        
-        PHAuthorizationStatus authorStatus = [PHPhotoLibrary authorizationStatus];
-        if ( authorStatus == PHAuthorizationStatusDenied ) {
-            
-            return NO;
-        }
-        
-    }else{
-        
-        ALAuthorizationStatus author = [ALAssetsLibrary authorizationStatus];
-        
-        if ( author == ALAuthorizationStatusDenied ) {
-            
-            return NO;
-        }
-        return YES;
-    }
-    
-    return NO;
-}
-
 
 @end
